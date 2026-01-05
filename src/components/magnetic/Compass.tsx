@@ -277,12 +277,12 @@ const Compass: React.FC<CompassProps> = ({
 
         {/* Indicadores de sur */}
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2">
-          <div className="bg-gradient-to-r from-orange-500 to-red-600 dark:from-orange-600 dark:to-red-700 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+          <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 dark:from-yellow-600 dark:to-yellow-700 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
             NORTE GEOGRÁFICO (0°)
           </div>
         </div>
         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2">
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+          <div className="bg-gradient-to-r from-red-500 to-red-600 dark:from-red-600 dark:to-red-700 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
             SUR GEOGRÁFICO (180°)
           </div>
         </div>
@@ -312,8 +312,8 @@ const Compass: React.FC<CompassProps> = ({
             </p>
           </div>
         </div>
-        <div className="flex items-center bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-purple-200 dark:border-purple-800">
-          <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 rounded-full mr-3"></div>
+        <div className="flex items-center bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-green-200 dark:border-green-800">
+          <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 rounded-full mr-3"></div>
           <div>
             <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
               Declinación

@@ -279,14 +279,14 @@ const MagneticCalculatorComponent: React.FC = () => {
             <>
               {/* Brújula */}
               <div className="mb-10">
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                   <h2 className="text-xl font-semibold text-gray-800 dark:text-white flex items-center gap-2">
                     <span className="text-green-500 dark:text-green-400">
                       🧭
                     </span>{" "}
                     Brújula Magnética
                   </h2>
-                  <div className="flex flex-col md:flex-row gap-3">
+                  <div className="flex flex-col md:flex-row gap-2">
                     <div className="px-4 py-2 bg-white dark:bg-gray-800 rounded-full border border-green-200 dark:border-green-700 shadow-sm">
                       <span className="text-sm font-medium text-green-700 dark:text-green-400">
                         Declinación:{" "}
@@ -396,7 +396,7 @@ const MagneticCalculatorComponent: React.FC = () => {
                       </>
                     )}
 
-                    <div className="p-3 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                    <div className="p-5 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg border border-yellow-200 dark:border-yellow-800">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm font-medium text-gray-800 dark:text-gray-200">

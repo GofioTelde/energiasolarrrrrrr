@@ -274,7 +274,7 @@ const Compass: React.FC<CompassProps> = ({
         </svg>
 
         {/* Indicadores de sur */}
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2">
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-5">
           <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 dark:from-yellow-600 dark:to-yellow-700 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
             NORTE GEOGRÁFICO (0°)
           </div>

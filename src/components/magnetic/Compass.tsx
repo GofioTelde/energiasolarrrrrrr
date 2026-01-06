@@ -1,9 +1,9 @@
 import React from "react";
 
 interface CompassProps {
-  geographicSouth: number; // Cambiado de geographicNorth
-  magneticSouth: number; // Cambiado de magneticNorth
-  declination: number; // Declinación en grados
+  geographicSouth: number;
+  magneticSouth: number;
+  declination: number;
   declinationDirection: "E" | "W";
 }
 
@@ -16,7 +16,6 @@ const Compass: React.FC<CompassProps> = ({
   const radius = 140;
   const center = radius + 30;
 
-  // Crear puntos cardinales con SUD en lugar de NORTE como principal
   const cardinalPoints = [
     { label: "S", angle: 180, color: "text-red-600", bgColor: "bg-red-500" },
     { label: "SO", angle: 225, color: "text-gray-700", bgColor: "bg-gray-500" },
@@ -28,7 +27,6 @@ const Compass: React.FC<CompassProps> = ({
     { label: "SE", angle: 135, color: "text-gray-700", bgColor: "bg-gray-500" },
   ];
 
-  // Convertir ángulo a coordenadas
   const angleToCoordinates = (angle: number, r: number) => {
     const rad = (angle - 90) * (Math.PI / 180);
     return {
@@ -140,29 +138,29 @@ const Compass: React.FC<CompassProps> = ({
           {/* Centro */}
           <circle cx={center} cy={center} r="8" fill="#1e293b" />
 
-          {/* Aguja SUR GEOGRÁFICO (rojo oscuro) */}
+          {/* Aguja SUR GEOGRÁFICO (rojo oscuro) - MÁS CORTA */}
           <g>
             <line
               x1={center}
               y1={center}
-              x2={angleToCoordinates(geographicSouth, radius - 40).x}
-              y2={angleToCoordinates(geographicSouth, radius - 40).y}
+              x2={angleToCoordinates(geographicSouth, radius - 70).x}
+              y2={angleToCoordinates(geographicSouth, radius - 70).y}
               stroke="#dc2626"
               strokeWidth="5"
               strokeLinecap="round"
               strokeDasharray="10,5"
             />
-            {/* Punta de flecha del sur geográfico */}
+            {/* Punta de flecha del sur geográfico - MÁS PEQUEÑA */}
             <polygon
               points={`
-                ${angleToCoordinates(geographicSouth, radius - 25).x},${
-                angleToCoordinates(geographicSouth, radius - 25).y
+                ${angleToCoordinates(geographicSouth, radius - 60).x},${
+                angleToCoordinates(geographicSouth, radius - 60).y
               }
-                ${angleToCoordinates(geographicSouth - 10, radius - 35).x},${
-                angleToCoordinates(geographicSouth - 10, radius - 35).y
+                ${angleToCoordinates(geographicSouth - 8, radius - 70).x},${
+                angleToCoordinates(geographicSouth - 8, radius - 70).y
               }
-                ${angleToCoordinates(geographicSouth + 10, radius - 35).x},${
-                angleToCoordinates(geographicSouth + 10, radius - 35).y
+                ${angleToCoordinates(geographicSouth + 8, radius - 70).x},${
+                angleToCoordinates(geographicSouth + 8, radius - 70).y
               }
               `}
               fill="#dc2626"
@@ -170,21 +168,9 @@ const Compass: React.FC<CompassProps> = ({
               strokeWidth="1"
             />
             <circle cx={center} cy={center} r="6" fill="#dc2626" />
-
-            {/* Etiqueta SUR GEOGRÁFICO */}
-            <text
-              x={angleToCoordinates(geographicSouth, radius - 55).x}
-              y={angleToCoordinates(geographicSouth, radius - 55).y}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              className="text-xs font-bold"
-              fill="#dc2626"
-            >
-              SUR GEOGRÁFICO
-            </text>
           </g>
 
-          {/* Aguja SUR MAGNÉTICO (azul) */}
+          {/* Aguja SUR MAGNÉTICO (azul) - MANTENIDA ORIGINAL */}
           <g>
             <line
               x1={center}
@@ -213,18 +199,56 @@ const Compass: React.FC<CompassProps> = ({
               strokeWidth="1"
             />
             <circle cx={center} cy={center} r="4" fill="#3b82f6" />
+          </g>
 
-            {/* Etiqueta SUR MAGNÉTICO */}
+          {/* Texto "GEOGRÁFICO" en el lado izquierdo - MISMO SENTIDO QUE MAGNÉTICO (-90°) */}
+          <g transform={`rotate(-90 ${center - 65} ${center})`}>
             <text
-              x={angleToCoordinates(magneticSouth, radius - 40).x}
-              y={angleToCoordinates(magneticSouth, radius - 40).y}
+              x={center - 65}
+              y={center}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              className="text-xs font-bold"
+              fill="#dc2626"
+            >
+              GEOGRÁFICO
+            </text>
+            {/* Línea de conexión al centro */}
+            <line
+              x1={center - 65}
+              y1={center}
+              x2={center - 15}
+              y2={center}
+              stroke="#dc2626"
+              strokeWidth="1"
+              strokeDasharray="3,3"
+              transform={`rotate(90 ${center - 65} ${center})`}
+            />
+          </g>
+
+          {/* Texto "MAGNÉTICO" en el lado derecho - ASCENDENTE (-90°) */}
+          <g transform={`rotate(-90 ${center + 65} ${center})`}>
+            <text
+              x={center + 65}
+              y={center}
               textAnchor="middle"
               dominantBaseline="middle"
               className="text-xs font-bold"
               fill="#3b82f6"
             >
-              SUR MAGNÉTICO
+              MAGNÉTICO
             </text>
+            {/* Línea de conexión al centro */}
+            <line
+              x1={center + 65}
+              y1={center}
+              x2={center + 15}
+              y2={center}
+              stroke="#3b82f6"
+              strokeWidth="1"
+              strokeDasharray="3,3"
+              transform={`rotate(90 ${center + 65} ${center})`}
+            />
           </g>
 
           {/* Ángulo de declinación */}
@@ -252,7 +276,7 @@ const Compass: React.FC<CompassProps> = ({
           {/* Texto de declinación en el centro */}
           <text
             x={center}
-            y={center}
+            y={center - 30}
             textAnchor="middle"
             dominantBaseline="middle"
             className="font-bold"
@@ -263,7 +287,7 @@ const Compass: React.FC<CompassProps> = ({
           </text>
           <text
             x={center}
-            y={center + 20}
+            y={center - 50}
             textAnchor="middle"
             dominantBaseline="middle"
             className="text-xs font-medium"

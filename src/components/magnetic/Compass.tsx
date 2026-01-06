@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 
 interface CompassProps {
@@ -40,9 +38,9 @@ const Compass: React.FC<CompassProps> = ({
   };
 
   return (
-    <div className="relative">
+    <div className="relative flex justify-center items-center">
       <div
-        className="relative mx-auto"
+        className="relative mx-auto w-full max-w-md"
         style={{ width: center * 2, height: center * 2 }}
       >
         <svg width={center * 2} height={center * 2} className="mx-auto">
@@ -284,74 +282,6 @@ const Compass: React.FC<CompassProps> = ({
         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2">
           <div className="bg-gradient-to-r from-red-500 to-red-600 dark:from-red-600 dark:to-red-700 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
             SUR GEOGRÁFICO (180°)
-          </div>
-        </div>
-      </div>
-
-      {/* Leyenda */}
-      <div className="mt-8 flex flex-wrap justify-center gap-6">
-        <div className="flex items-center bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-red-200 dark:border-red-800">
-          <div className="w-6 h-6 bg-gradient-to-br from-red-500 to-red-600 dark:from-red-600 dark:to-red-700 rounded-full mr-3"></div>
-          <div>
-            <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-              Sur Geográfico
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              180° (referencia para paneles solares)
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-blue-200 dark:border-blue-800">
-          <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-full mr-3"></div>
-          <div>
-            <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-              Sur Magnético
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {magneticSouth.toFixed(1)}° desde N geográfico
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-green-200 dark:border-green-800">
-          <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 rounded-full mr-3"></div>
-          <div>
-            <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-              Declinación
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {declination.toFixed(2)}° {declinationDirection}
-              {declinationDirection === "E" ? " (Este)" : " (Oeste)"}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Explicación para instalación solar */}
-      <div className="mt-6 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
-        <div className="flex items-start gap-3">
-          <div className="text-2xl text-orange-600 dark:text-orange-400">
-            ☀️
-          </div>
-          <div>
-            <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-1">
-              Instrucción para Orientación Solar
-            </h4>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              Para orientar los paneles exactamente al{" "}
-              <strong className="text-orange-600 dark:text-orange-400">
-                sur geográfico
-              </strong>{" "}
-              (óptimo en el hemisferio norte), debe alinear la brújula con el{" "}
-              <strong className="text-blue-600 dark:text-blue-400">
-                sur magnético
-              </strong>
-              ({magneticSouth.toFixed(1)}°), que está {declination.toFixed(2)}°
-              al{" "}
-              <strong className="text-purple-600 dark:text-purple-400">
-                {declinationDirection === "E" ? "este" : "oeste"}
-              </strong>{" "}
-              del sur geográfico.
-            </p>
           </div>
         </div>
       </div>

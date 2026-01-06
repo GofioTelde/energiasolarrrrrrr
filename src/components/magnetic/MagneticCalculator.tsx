@@ -450,7 +450,7 @@ const MagneticCalculatorComponent: React.FC = () => {
                           Latitud
                         </p>
                         <p className="text-lg font-bold text-blue-700 dark:text-blue-400">
-                          {coordinates.latitude.toFixed(6)}°
+                          {coordinates.latitude.toFixed(3)}°
                         </p>
                         <div className="flex items-center gap-1 mt-1">
                           <div
@@ -473,7 +473,7 @@ const MagneticCalculatorComponent: React.FC = () => {
                           Longitud
                         </p>
                         <p className="text-lg font-bold text-green-700 dark:text-green-400">
-                          {coordinates.longitude.toFixed(6)}°
+                          {coordinates.longitude.toFixed(3)}°
                         </p>
                         <div className="flex items-center gap-1 mt-1">
                           <div

@@ -1,5 +1,6 @@
 "use client";
 
+import { storageService } from "@/services/storageService";
 import React, { useState, useEffect, useCallback } from "react";
 import { MagneticCalculator } from "@/services/magneticCalculator";
 import { Coordinates } from "@/types/magnetic.types";
@@ -7,7 +8,7 @@ import Compass from "./Compass";
 
 const MagneticCalculatorComponent: React.FC = () => {
   const [coordinates, setCoordinates] = useState<Coordinates>({
-    latitude: 28.1461, // Las Palmas por defecto
+    latitude: 28.1461,
     longitude: -15.4216,
     altitude: 8,
   });
@@ -17,31 +18,63 @@ const MagneticCalculatorComponent: React.FC = () => {
   const [locationName, setLocationName] = useState("Las Palmas");
   const [modelInfo, setModelInfo] = useState<any>(null);
 
-  // Usar useCallback para memoizar la función y evitar recreaciones innecesarias
+  // Guardar datos automáticamente
+  const saveLocationData = useCallback(
+    (magneticResult: any) => {
+      if (magneticResult) {
+        storageService.saveProjectData({
+          location: {
+            latitude: coordinates.latitude,
+            longitude: coordinates.longitude,
+            altitude: coordinates.altitude || 8, // ✅ Aseguramos que siempre sea número
+            locationName: locationName,
+            magneticDeclination: magneticResult.declination,
+            magneticSouth: magneticResult.magneticSouth,
+            declinationDirection: magneticResult.declinationDirection,
+            geographicSouth: magneticResult.geographicSouth,
+          },
+        });
+      }
+    },
+    [coordinates, locationName]
+  );
+
   const handleCalculate = useCallback(() => {
     setLoading(true);
 
-    // Usar requestAnimationFrame para evitar actualizaciones sincrónicas
     requestAnimationFrame(() => {
       const magneticResult =
         MagneticCalculator.calculateDeclination(coordinates);
       setResult(magneticResult);
       setLoading(false);
+
+      // ✅ GUARDAR DATOS CON TODAS LAS PROPIEDADES
+      saveLocationData(magneticResult);
     });
-  }, [coordinates]); // Dependencia: coordinates
+  }, [coordinates, saveLocationData]);
 
   const handleCoordinateChange = useCallback(
     (field: keyof Coordinates, value: string) => {
       const numValue = parseFloat(value);
       if (!isNaN(numValue)) {
-        setCoordinates((prev) => ({
-          ...prev,
+        const newCoordinates = {
+          ...coordinates,
           [field]: numValue,
-        }));
+          altitude: coordinates.altitude || 8, // ✅ Aseguramos altitude
+        };
+        setCoordinates(newCoordinates);
+
+        // ✅ GUARDAR INMEDIATAMENTE AL CAMBIAR COORDENADAS
+        if (result) {
+          const magneticResult =
+            MagneticCalculator.calculateDeclination(newCoordinates);
+          setResult(magneticResult);
+          saveLocationData(magneticResult);
+        }
       }
     },
-    []
-  ); // Sin dependencias
+    [coordinates, result, saveLocationData]
+  );
 
   // Ejemplos predefinidos con datos reales
   const exampleLocations = [
@@ -94,29 +127,97 @@ const MagneticCalculatorComponent: React.FC = () => {
   ];
 
   const loadExample = useCallback((location: (typeof exampleLocations)[0]) => {
-    setCoordinates({
+    const newCoordinates = {
       latitude: location.lat,
       longitude: location.lon,
       altitude: location.alt,
-    });
+    };
+
+    setCoordinates(newCoordinates);
     setLocationName(location.name);
-  }, []); // Sin dependencias
+
+    // ✅ CALCULAR Y GUARDAR DATOS DEL EJEMPLO
+    const magneticResult =
+      MagneticCalculator.calculateDeclination(newCoordinates);
+    setResult(magneticResult);
+
+    storageService.saveProjectData({
+      location: {
+        latitude: location.lat,
+        longitude: location.lon,
+        altitude: location.alt,
+        locationName: location.name,
+        magneticDeclination: magneticResult.declination,
+        magneticSouth: magneticResult.magneticSouth,
+        declinationDirection: magneticResult.declinationDirection,
+        geographicSouth: magneticResult.geographicSouth,
+      },
+    });
+  }, []);
 
   // Calcular automáticamente al cambiar coordenadas
   useEffect(() => {
     handleCalculate();
-  }, [handleCalculate]); // Dependencia correcta: handleCalculate
+  }, [handleCalculate]);
 
-  // Obtener información del modelo (solo una vez al montar)
+  // Verificar si hay datos guardados al cargar
   useEffect(() => {
-    // Usar setTimeout para evitar actualización sincrónica
+    const savedData = storageService.getProjectData();
+    if (savedData.location) {
+      setCoordinates({
+        latitude: savedData.location.latitude,
+        longitude: savedData.location.longitude,
+        altitude: savedData.location.altitude || 8,
+      });
+      if (savedData.location.locationName) {
+        setLocationName(savedData.location.locationName);
+      }
+    }
+  }, []);
+
+  // Obtener información del modelo
+  useEffect(() => {
     const timer = setTimeout(() => {
       const info = MagneticCalculator.getModelInfo();
       setModelInfo(info);
     }, 0);
 
     return () => clearTimeout(timer);
-  }, []); // Sin dependencias (solo al montar)
+  }, []);
+
+  // Manejar cambio de nombre de ubicación
+  const handleLocationNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newName = e.target.value;
+      setLocationName(newName);
+
+      // ✅ GUARDAR NOMBRE AUTOMÁTICAMENTE
+      const currentData = storageService.getProjectData();
+      if (currentData.location) {
+        storageService.saveProjectData({
+          ...currentData,
+          location: {
+            ...currentData.location,
+            locationName: newName,
+          },
+        });
+      } else {
+        storageService.saveProjectData({
+          location: {
+            latitude: coordinates.latitude,
+            longitude: coordinates.longitude,
+            altitude: coordinates.altitude || 8, // ✅ Aseguramos altitude
+            locationName: newName,
+            magneticDeclination: result?.declination || 0,
+            magneticSouth: result?.magneticSouth || 180,
+            declinationDirection: result?.declinationDirection || "W",
+            geographicSouth: result?.geographicSouth || 180,
+          },
+        });
+      }
+    },
+    [coordinates, result]
+  );
 
   return (
     <div className="space-y-8">
@@ -227,7 +328,7 @@ const MagneticCalculatorComponent: React.FC = () => {
             <input
               type="text"
               value={locationName}
-              onChange={(e) => setLocationName(e.target.value)}
+              onChange={handleLocationNameChange}
               className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-blue-500 dark:focus:border-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
               placeholder="Nombre de la ubicación"
             />

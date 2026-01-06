@@ -35,6 +35,12 @@ const Compass: React.FC<CompassProps> = ({
     };
   };
 
+  // Calcular declinación con signo
+  const declinationWithSign =
+    declinationDirection === "E"
+      ? Math.abs(declination)
+      : -Math.abs(declination);
+
   return (
     <div className="relative flex justify-center items-center">
       <div
@@ -273,7 +279,7 @@ const Compass: React.FC<CompassProps> = ({
             />
           )}
 
-          {/* Texto de declinación en el centro */}
+          {/* Texto de declinación en el centro - CORREGIDO */}
           <text
             x={center}
             y={center - 30}
@@ -283,7 +289,7 @@ const Compass: React.FC<CompassProps> = ({
             fontSize="14"
             fill="#1e40af"
           >
-            {declination.toFixed(2)}° {declinationDirection}
+            {declinationWithSign.toFixed(2)}°
           </text>
           <text
             x={center}

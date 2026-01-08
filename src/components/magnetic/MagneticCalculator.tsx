@@ -10,13 +10,17 @@ const MagneticCalculatorComponent: React.FC = () => {
   const [coordinates, setCoordinates] = useState<Coordinates>({
     latitude: 28.1461,
     longitude: -15.4216,
-    altitude: 8,
+    altitude: 0,
   });
 
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [locationName, setLocationName] = useState("Las Palmas");
   const [modelInfo, setModelInfo] = useState<any>(null);
+  const [alert, setAlert] = useState<{ message: string; show: boolean }>({
+    message: "",
+    show: false,
+  });
 
   // Guardar datos automáticamente
   const saveLocationData = useCallback(
@@ -26,7 +30,7 @@ const MagneticCalculatorComponent: React.FC = () => {
           location: {
             latitude: coordinates.latitude,
             longitude: coordinates.longitude,
-            altitude: coordinates.altitude || 8, // ✅ Aseguramos que siempre sea número
+            altitude: coordinates.altitude || 0,
             locationName: locationName,
             magneticDeclination: magneticResult.declination,
             magneticSouth: magneticResult.magneticSouth,
@@ -55,12 +59,34 @@ const MagneticCalculatorComponent: React.FC = () => {
 
   const handleCoordinateChange = useCallback(
     (field: keyof Coordinates, value: string) => {
+      // Rechazar comas - no permitir separador de decimales con coma
+      if (value.includes(",")) {
+        setAlert({
+          message:
+            "Por favor usa punto (.) como separador decimal, no coma (,)",
+          show: true,
+        });
+        setTimeout(() => setAlert({ message: "", show: false }), 3000);
+        return;
+      }
+
+      // Permitir borrar completamente (vacío)
+      if (value === "") {
+        const newCoordinates = {
+          ...coordinates,
+          [field]: 0,
+        };
+        setCoordinates(newCoordinates);
+        return;
+      }
+
       const numValue = parseFloat(value);
+
+      // Si es un número válido, actualizar el estado
       if (!isNaN(numValue)) {
         const newCoordinates = {
           ...coordinates,
           [field]: numValue,
-          altitude: coordinates.altitude || 8, // ✅ Aseguramos altitude
         };
         setCoordinates(newCoordinates);
 
@@ -72,6 +98,7 @@ const MagneticCalculatorComponent: React.FC = () => {
           saveLocationData(magneticResult);
         }
       }
+      // No hacer nada más - dejar que el input se actualice visualmente sin validar
     },
     [coordinates, result, saveLocationData]
   );
@@ -145,7 +172,7 @@ const MagneticCalculatorComponent: React.FC = () => {
       location: {
         latitude: location.lat,
         longitude: location.lon,
-        altitude: location.alt,
+        altitude: location.alt || 0,
         locationName: location.name,
         magneticDeclination: magneticResult.declination,
         magneticSouth: magneticResult.magneticSouth,
@@ -167,7 +194,7 @@ const MagneticCalculatorComponent: React.FC = () => {
       setCoordinates({
         latitude: savedData.location.latitude,
         longitude: savedData.location.longitude,
-        altitude: savedData.location.altitude || 8,
+        altitude: savedData.location.altitude || 0,
       });
       if (savedData.location.locationName) {
         setLocationName(savedData.location.locationName);
@@ -206,7 +233,7 @@ const MagneticCalculatorComponent: React.FC = () => {
           location: {
             latitude: coordinates.latitude,
             longitude: coordinates.longitude,
-            altitude: coordinates.altitude || 8, // ✅ Aseguramos altitude
+            altitude: coordinates.altitude || 0,
             locationName: newName,
             magneticDeclination: result?.declination || 0,
             magneticSouth: result?.magneticSouth || 180,
@@ -261,9 +288,11 @@ const MagneticCalculatorComponent: React.FC = () => {
               </span>
             </label>
             <input
-              type="number"
-              step="0.000001"
-              value={coordinates.latitude}
+              type="text"
+              inputMode="decimal"
+              defaultValue={
+                coordinates.latitude === 0 ? "" : coordinates.latitude
+              }
               onChange={(e) =>
                 handleCoordinateChange("latitude", e.target.value)
               }
@@ -283,9 +312,11 @@ const MagneticCalculatorComponent: React.FC = () => {
               </span>
             </label>
             <input
-              type="number"
-              step="0.000001"
-              value={coordinates.longitude}
+              type="text"
+              inputMode="decimal"
+              defaultValue={
+                coordinates.longitude === 0 ? "" : coordinates.longitude
+              }
               onChange={(e) =>
                 handleCoordinateChange("longitude", e.target.value)
               }
@@ -305,8 +336,11 @@ const MagneticCalculatorComponent: React.FC = () => {
               </span>
             </label>
             <input
-              type="number"
-              value={coordinates.altitude || ""}
+              type="text"
+              inputMode="numeric"
+              defaultValue={
+                coordinates.altitude === 0 ? "" : coordinates.altitude
+              }
               onChange={(e) =>
                 handleCoordinateChange("altitude", e.target.value)
               }
@@ -774,6 +808,24 @@ const MagneticCalculatorComponent: React.FC = () => {
                 </p>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Alerta personalizada */}
+      {alert.show && (
+        <div className="fixed top-6 right-6 z-50 animate-in slide-in-from-top">
+          <div className="bg-black dark:bg-black border border-red-500 dark:border-red-600 rounded-lg p-4 shadow-lg flex items-center gap-3">
+            <div className="text-red-500 dark:text-red-400 text-xl">⚠️</div>
+            <p className="text-red-600 dark:text-red-500 font-bold text-sm">
+              {alert.message}
+            </p>
+            <button
+              onClick={() => setAlert({ message: "", show: false })}
+              className="ml-2 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200"
+            >
+              ✕
+            </button>
           </div>
         </div>
       )}

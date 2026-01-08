@@ -29,6 +29,7 @@ export interface ProjectData {
   panelType?: PanelType;
   systemType?: SystemType;
   installationType?: InstallationType;
+  hasBatteries?: boolean;
 
   // Fase 3 y posteriores
   availableArea?: number;
@@ -39,7 +40,6 @@ export interface ProjectData {
 const STORAGE_KEY = "solar_calc_project_data";
 
 export const storageService = {
-  // Guardar datos
   saveProjectData: (data: ProjectData): void => {
     try {
       const existingData = storageService.getProjectData();
@@ -50,7 +50,6 @@ export const storageService = {
     }
   },
 
-  // Obtener datos
   getProjectData: (): ProjectData => {
     try {
       const data = localStorage.getItem(STORAGE_KEY);
@@ -61,32 +60,13 @@ export const storageService = {
     }
   },
 
-  // Limpiar datos
   clearProjectData: (): void => {
     localStorage.removeItem(STORAGE_KEY);
   },
 
-  // Actualizar una parte específica
   updatePartialData: (key: keyof ProjectData, value: any): void => {
     const currentData = storageService.getProjectData();
     const updatedData = { ...currentData, [key]: value };
     storageService.saveProjectData(updatedData);
   },
 };
-
-export interface ProjectData {
-  // Fase 1
-  location?: LocationData;
-
-  // Fase 2
-  consumption?: ConsumptionData;
-  panelType?: PanelType;
-  systemType?: SystemType;
-  installationType?: InstallationType;
-  hasBatteries?: boolean; // ✅ AÑADE ESTA LÍNEA
-
-  // Fase 3 y posteriores
-  availableArea?: number;
-  solarCalculations?: any;
-  selectedComponents?: any;
-}
